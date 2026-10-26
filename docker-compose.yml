@@ -1,0 +1,183 @@
+
+services:
+  api-gateway:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "corepack enable && pnpm install --no-frozen-lockfile --allow-build esbuild && pnpm dev"
+    environment:
+      PORT: 3000
+      CHOKIDAR_USEPOLLING: "true"
+      USER_SERVICE_URL: http://user-service:3001/users
+      PRODUCT_SERVICE_URL: http://product-service:3002/products
+      ORDER_SERVICE_URL: http://order-service:3003/orders
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./services/api-gateway:/app
+      - api_gateway_node_modules:/app/node_modules
+    depends_on:
+      user-service:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
+      order-service:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+
+  user-service:
+   image: node:22-alpine
+   working_dir: /app
+   command: sh -c "corepack enable && pnpm install --no-frozen-lockfile --allow-build esbuild && pnpm dev"
+   env_file:
+    - ./services/user-service/.env
+   environment:
+    PORT: 3001
+    CHOKIDAR_USEPOLLING: "true"
+   volumes:
+    - ./services/user-service:/app
+    - user_service_node_modules:/app/node_modules
+   healthcheck:
+    test:
+      - CMD
+      - node
+      - -e
+      - "fetch('http://127.0.0.1:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+    interval: 10s
+    timeout: 3s
+    retries: 5
+    start_period: 20s
+   restart: unless-stopped
+
+  product-service:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "corepack enable && pnpm install --no-frozen-lockfile --allow-build esbuild && pnpm dev"
+    environment:
+      PORT: 3002
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./services/product-service:/app
+      - product_service_node_modules:/app/node_modules
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3002/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  order-service:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "corepack enable && pnpm install --no-frozen-lockfile --allow-build esbuild && pnpm dev"
+    environment:
+      PORT: 3003
+      CHOKIDAR_USEPOLLING: "true"
+      PAYMENT_SERVICE_URL: http://payment-service:3004
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
+      NOTIFICATION_SERVICE_URL: http://notification-service:3006
+    volumes:
+      - ./services/order-service:/app
+      - order_service_node_modules:/app/node_modules
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3003/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  payment-service:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "corepack enable && pnpm install --no-frozen-lockfile --allow-build esbuild && pnpm dev"
+    environment:
+      PORT: 3004
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./services/payment-service:/app
+      - payment_service_node_modules:/app/node_modules
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3004/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  inventory-service:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "corepack enable && pnpm install --no-frozen-lockfile --allow-build esbuild && pnpm dev"
+    environment:
+      PORT: 3005
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./services/inventory-service:/app
+      - inventory_service_node_modules:/app/node_modules
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3005/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  notification-service:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "corepack enable && pnpm install --no-frozen-lockfile --allow-build esbuild && pnpm dev"
+    environment:
+      PORT: 3006
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./services/notification-service:/app
+      - notification_service_node_modules:/app/node_modules
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3006/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  api_gateway_node_modules:
+  user_service_node_modules:
+  product_service_node_modules:
+  order_service_node_modules:
+  payment_service_node_modules:
+  inventory_service_node_modules:
+  notification_service_node_modules:
