@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import userRoutes from './routes/user.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 import { connectDB } from './db/dbConnect.js';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -17,6 +18,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/users', userRoutes);
+app.use('/users/admin', adminRoutes);
 
 
 

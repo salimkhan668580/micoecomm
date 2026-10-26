@@ -3,14 +3,17 @@ import jwt, { type JwtPayload } from "jsonwebtoken";
 
 export type AuthClaims = JwtPayload & {
   sub: string;
-  role: "user" | "admin";
+  role: "user" | "admin" | "Admin" | "SubAdmin";
 };
 
 function isAuthClaims(payload: string | JwtPayload): payload is AuthClaims {
   return (
     typeof payload !== "string" &&
     typeof payload.sub === "string" &&
-    (payload.role === "user" || payload.role === "admin")
+    (payload.role === "user" ||
+      payload.role === "admin" ||
+      payload.role === "Admin" ||
+      payload.role === "SubAdmin")
   );
 }
 
