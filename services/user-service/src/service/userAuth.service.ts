@@ -97,6 +97,30 @@ export async function getUserById(userId: string) {
   };
 }
 
+export async function verifyUserToken(token: string) {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw authError("Authentication is not configured", 500);
+  }
+
+  let payload: string | jwt.JwtPayload;
+  try {
+    payload = jwt.verify(token, secret);
+  } catch (error: unknown) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      throw authError("Invalid or expired authentication token", 401);
+    }
+
+    throw error;
+  }
+
+  if (typeof payload === "string" || typeof payload.sub !== "string") {
+    throw authError("Invalid authentication token", 401);
+  }
+
+  return getUserById(payload.sub);
+}
+
 export async function updateUserById(userId: string, input: UpdateMeInput) {
   try {
     const user = await UserModel.findById(userId);

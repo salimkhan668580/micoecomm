@@ -46,6 +46,10 @@ const updateMeSchema = z
     message: "At least one profile field is required",
   });
 
+const verifyUserTokenSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type UpdateMeInput = z.infer<typeof updateMeSchema>;
@@ -54,4 +58,5 @@ export default {
   registerSchema,
   loginSchema,
   updateMeSchema,
+  verifyUserTokenSchema,
 };

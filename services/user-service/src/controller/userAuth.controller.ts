@@ -4,6 +4,7 @@ import {
   loginUser,
   registerUser,
   updateUserById,
+  verifyUserToken,
 } from "../service/userAuth.service.js";
 
 function respondWithProfileError(
@@ -85,6 +86,19 @@ export async function updateMe(
 ) {
   try {
     const user = await updateUserById(res.locals.auth.sub, req.body);
+    res.status(200).json({ user });
+  } catch (error: unknown) {
+    respondWithProfileError(error, res, next);
+  }
+}
+
+export async function VerifyUserToken(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const user = await verifyUserToken(req.body.token);
     res.status(200).json({ user });
   } catch (error: unknown) {
     respondWithProfileError(error, res, next);

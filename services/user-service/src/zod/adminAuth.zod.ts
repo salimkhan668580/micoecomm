@@ -5,8 +5,13 @@ const adminLoginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+const verifyAdminTokenSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+});
+
 export type AdminLoginInput = z.infer<typeof adminLoginSchema>;
 
 export default {
   adminLoginSchema,
+  verifyAdminTokenSchema,
 };

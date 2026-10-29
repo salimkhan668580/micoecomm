@@ -63,6 +63,8 @@ services:
     image: node:22-alpine
     working_dir: /app
     command: sh -c "corepack enable && pnpm install --no-frozen-lockfile --allow-build esbuild && pnpm dev"
+    env_file:
+    - ./services/product-service/.env
     environment:
       PORT: 3002
       CHOKIDAR_USEPOLLING: "true"

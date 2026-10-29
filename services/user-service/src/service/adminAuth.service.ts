@@ -40,3 +40,43 @@ export async function loginAdmin(input: AdminLoginInput) {
     },
   };
 }
+
+export async function verifyAdminToken(token: string) {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw authError("Authentication is not configured", 500);
+  }
+
+  let payload: string | jwt.JwtPayload;
+  try {
+    payload = jwt.verify(token, secret);
+  } catch (error: unknown) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      throw authError("Invalid or expired authentication token", 401);
+    }
+
+    throw error;
+  }
+
+  if (
+    typeof payload === "string" ||
+    typeof payload.sub !== "string" ||
+    (payload.role !== "Admin" && payload.role !== "SubAdmin")
+  ) {
+    throw authError("Invalid authentication token", 401);
+  }
+
+  const admin = await AdminModel.findById(payload.sub).select(
+    "name email role",
+  );
+  if (!admin) {
+    throw authError("Admin not found", 404);
+  }
+
+  return {
+    id: admin.id,
+    name: admin.name,
+    email: admin.email,
+    role: admin.role,
+  };
+}
