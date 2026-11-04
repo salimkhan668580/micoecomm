@@ -29,6 +29,13 @@ app.use(
     changeOrigin: true,
   }),
 );
+app.use(
+  "/api/inventory",
+  createProxyMiddleware({
+    target: process.env.INVENTORY_SERVICE_URL ?? "http://localhost:3005/inventory",
+    changeOrigin: true,
+  }),
+);
 
 app.get("/health", (req, res) => {
   res.send("API Gateway is running");
