@@ -12,6 +12,7 @@ router.get("/health", (_req, res) => {
 
 router.post("/add", async (req, res) => {
   try {
+    
     const { product_id, quantity } = req.body;
     const result = await db.query(
   `INSERT INTO inventory (product_id, quantity)
