@@ -4,6 +4,7 @@ import adminRoutes from './routes/admin.routes.js';
 import { connectDB } from './db/dbConnect.js';
 import dotenv from 'dotenv';
 import { connectRabbitMQ } from './config/rabbitmq.js';
+import { initSetupRabbitMQ } from './messaging/initSetup.js';
 dotenv.config();
 
 const app = express();
@@ -18,6 +19,7 @@ app.use('/products/admin', adminRoutes);
 
 async function startServer(): Promise<void> {
   await connectRabbitMQ();
+  await initSetupRabbitMQ();
   await connectDB();
   app.listen(port, () => {
     console.log(`Product service running on port ${port}`);

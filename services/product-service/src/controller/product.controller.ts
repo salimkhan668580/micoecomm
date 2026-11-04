@@ -1,4 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
+import { publishMessage } from "../messaging/publisher.js";
+
 import {
   createProduct,
   deleteProduct,
@@ -34,6 +36,15 @@ export async function createProductController(
 ): Promise<void> {
   try {
     const product = await createProduct(req.body);
+
+    publishMessage("product_events","product.created",
+       {
+        event: "product.created",
+        data: product,
+        timestamp: new Date().toISOString(),
+      }
+    )
+
     res.status(201).json({ product });
   } catch (error: unknown) {
     handleProductError(error, res, next);

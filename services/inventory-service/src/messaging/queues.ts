@@ -2,7 +2,8 @@ import { getChannel } from "../config/rabbitmq";
 
 export const createQueue = async (
   queueName: string,
-  exchange: string
+  exchange: string,
+  routingKey: string = ""
 ) => {
   const channel = getChannel();
 
@@ -13,6 +14,6 @@ export const createQueue = async (
   await channel.bindQueue(
     queueName,
     exchange,
-    ""
+    routingKey
   );
 };

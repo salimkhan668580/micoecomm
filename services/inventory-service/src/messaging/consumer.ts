@@ -5,6 +5,7 @@ export const consumeMessage = async (
   callback: (data: any) => Promise<void>
 ) => {
   const channel = getChannel();
+  console.log(`Consumer started: ${queueName}`);
 
   await channel.consume(queueName, async (msg: any) => {
     if (!msg) return;
@@ -12,7 +13,7 @@ export const consumeMessage = async (
     try {
       const data = JSON.parse(msg.content.toString());
 
-      await callback(data);
+      await callback( data);
 
       channel.ack(msg);
     } catch (error) {
