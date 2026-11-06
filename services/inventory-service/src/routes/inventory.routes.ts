@@ -1,7 +1,8 @@
 import { Router } from "express";
 import inventoryController from "../controller/inventory.controller.js";
 import { verifyAdminToken } from "../middleware/verifyAdminToken.js";
-
+import { validateSchema } from "../middleware/zodSchemaParser.js";
+import { reservationSchema } from "../zod/inventory.zod.js";
 
 const router = Router();
 
@@ -13,7 +14,13 @@ router.get("/health", (_req, res) => {
 });
 
 router.use(verifyAdminToken);
-router.get("/:productId",inventoryController.getInventory)
+router.post(
+  "/reservations",
+  validateSchema(reservationSchema),
+  inventoryController.reserveStock,
+);
 
+
+router.get("/:productId", inventoryController.getInventory);
 
 export default router;

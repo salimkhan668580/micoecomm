@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import morgan from 'morgan'
 dotenv.config();
 import inventoryRoutes from "./routes/inventory.routes.js";
 import { connectDB } from "./db/ConnectDB.js";
@@ -13,6 +14,7 @@ const port = Number(process.env.PORT) || 3005;
 
 app.use(express.json());
 
+app.use(morgan('dev'));
 app.get("/health", (_req, res) => {
   res.json({ service: "inventory-service", status: "ok" });
 });

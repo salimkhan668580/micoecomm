@@ -1,14 +1,16 @@
-CREATE TABLE reservations (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    CREATE TABLE reservations (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    product_id UUID NOT NULL,
-    quantity INTEGER NOT NULL CHECK (quantity > 0),
+        product_id VARCHAR(24) NOT NULL,
+        order_id UUID UNIQUE,
 
-    status VARCHAR(20) NOT NULL DEFAULT 'reserved'
-        CHECK (status IN ('reserved', 'confirmed', 'released', 'expired')),
+        quantity INTEGER NOT NULL CHECK (quantity > 0),
 
-    expires_at TIMESTAMP NOT NULL,
+        status VARCHAR(20) NOT NULL DEFAULT 'reserved'
+            CHECK (status IN ('reserved', 'confirmed', 'released', 'expired')),
 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+        expires_at TIMESTAMP NOT NULL,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
